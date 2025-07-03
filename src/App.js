@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 // Initial data for leave requests
 const initialRequestData = [
   {
@@ -27,32 +29,49 @@ const initialRequestData = [
 ];
 
 export default function App() {
-  return (
-    <>
-      <RequestList />
-      <NewRequestForm />
-      <ViewRequestForm />
-    </>
-  );
-}
+  const [viewRequestIsOpen, setViewRequestIsOpen] = useState(true);
+  const [newRequestIsOpen, setNewRequestIsOpen] = useState(false);
 
-// Component to display the list of leave requests
-function RequestList() {
+  const [selectedRequest, setSelectedRequest] = useState(null);
+
+  function handleSelectRequest(request) {
+    setSelectedRequest((prevRequest) =>
+      prevRequest?.id === request.id ? null : request
+    );
+  }
+
   return (
-    <div>
-      <ul>
-        {initialRequestData.map((request) => (
-          <Request key={request.id} request={request} />
-        ))}
-      </ul>
+    <div className="app">
+      <div className="sidebar">
+        <RequestList onSelectRequest={handleSelectRequest} />
+      </div>
+      <div className="main-content">
+        {newRequestIsOpen && <NewRequestForm />}
+        {viewRequestIsOpen && <ViewRequestForm request={selectedRequest} />}
+      </div>
     </div>
   );
 }
 
-// Component to display individual leave requests
-function Request({ request }) {
+// Component to display the list of leave requests
+function RequestList({ onSelectRequest }) {
   return (
-    <li>
+    <ul>
+      {initialRequestData.map((request) => (
+        <Request
+          key={request.id}
+          request={request}
+          onSelectRequest={onSelectRequest}
+        />
+      ))}
+    </ul>
+  );
+}
+
+// Component to display individual leave requests
+function Request({ request, onSelectRequest }) {
+  return (
+    <li onClick={() => onSelectRequest(request)}>
       <p>{request.requestType}</p>
       <p>
         From {request.from} to {request.to}
@@ -62,20 +81,46 @@ function Request({ request }) {
   );
 }
 
+// Component for the new request form
 function NewRequestForm() {
   return (
-    <div>
-      <h2>New Request Form</h2>
-      {/* Form to create a new leave request will be displayed here */}
-    </div>
+    <form>
+      <label>Request Type :</label>
+      <select>
+        <option value="Vacation Leave">Vacation Leave</option>
+        <option value="Sick Leave">Sick Leave</option>
+        <option value="Absent">Absent</option>
+      </select>
+
+      <label>From :</label>
+      <input type="date" name="from" />
+
+      <label>To :</label>
+      <input type="date" name="to" />
+
+      <label>Remarks :</label>
+      <textarea name="remarks" />
+
+      <button>Submit</button>
+      <button>Cancel</button>
+    </form>
   );
 }
 
-function ViewRequestForm() {
+// Component to view a specific leave request
+function ViewRequestForm({ request }) {
   return (
-    <div>
-      <h2>View Request Form</h2>
-      {/* Form to view a specific leave request will be displayed here */}
+    <div className="view-request">
+      <h2>{request?.requestType}</h2>
+      <label>From :</label>
+      <span>{request?.from}</span>
+      <label>To :</label>
+      <span>{request?.to}</span>
+      <label>Remarks :</label>
+      <span>{request?.remarks}</span>
+      <label>Status :</label>
+      <span>{request?.status}</span>
+      <button>Cancel Request</button>
     </div>
   );
 }
