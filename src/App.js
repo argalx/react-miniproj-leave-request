@@ -29,15 +29,23 @@ const initialRequestData = [
 ];
 
 export default function App() {
-  const [viewRequestIsOpen, setViewRequestIsOpen] = useState(true);
+  const [viewRequestIsOpen, setViewRequestIsOpen] = useState(false);
   const [newRequestIsOpen, setNewRequestIsOpen] = useState(false);
 
+  // State to manage the selected request for viewing
   const [selectedRequest, setSelectedRequest] = useState(null);
 
+  // Function to handle viewing a request
   function handleSelectRequest(request) {
+    // Set the selected request based on the clicked item
     setSelectedRequest((prevRequest) =>
       prevRequest?.id === request.id ? null : request
     );
+
+    // Toggle the viewRequestIsOpen state based on the selected request
+    request.id === selectedRequest?.id
+      ? setViewRequestIsOpen(false)
+      : setViewRequestIsOpen(true);
   }
 
   return (
@@ -120,7 +128,8 @@ function ViewRequestForm({ request }) {
       <span>{request?.remarks}</span>
       <label>Status :</label>
       <span>{request?.status}</span>
-      <button>Cancel Request</button>
+      {/* // Conditional rendering based on request status */}
+      {request?.status === "Pending" && <button>Cancel Request</button>}
     </div>
   );
 }
