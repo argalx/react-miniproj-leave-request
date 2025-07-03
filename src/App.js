@@ -29,6 +29,7 @@ const initialRequestData = [
 ];
 
 export default function App() {
+  // State to manage the visibility of the view request and new request forms
   const [viewRequestIsOpen, setViewRequestIsOpen] = useState(false);
   const [newRequestIsOpen, setNewRequestIsOpen] = useState(false);
 
@@ -56,8 +57,6 @@ export default function App() {
 
   // Function to handle canceling a request
   function handleCancelRequest(id) {
-    // Logic to cancel the request can be added here
-
     // Remove the request from the requestData state
     setRequestData((requestData) =>
       requestData.filter((request) => request.id !== id)
@@ -68,16 +67,40 @@ export default function App() {
     setViewRequestIsOpen(false);
   }
 
+  // Function to toggle the new request form
+  function toogleNewRequestForm() {
+    // Close the view request form if it is open
+    setViewRequestIsOpen(false);
+
+    // Toggle the new request form state
+    setNewRequestIsOpen(true);
+  }
+
+  // Function to handle the submission of a new request
+  function handleSubmitNewRequest(e, newRequest) {
+    // Prevent the default form submission behavior
+    e.preventDefault();
+
+    // Update the requestData state with the new request
+    setRequestData((prevRequestData) => [...prevRequestData, newRequest]);
+
+    // Close the new request form
+    setNewRequestIsOpen(false);
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
         <RequestList
           requestData={requestData}
           onSelectRequest={handleSelectRequest}
+          toogleNewRequestForm={toogleNewRequestForm}
         />
       </div>
       <div className="main-content">
-        {newRequestIsOpen && <NewRequestForm />}
+        {newRequestIsOpen && (
+          <NewRequestForm onSubmit={handleSubmitNewRequest} />
+        )}
         {viewRequestIsOpen && (
           <ViewRequestForm
             request={selectedRequest}
@@ -90,17 +113,20 @@ export default function App() {
 }
 
 // Component to display the list of leave requests
-function RequestList({ onSelectRequest, requestData }) {
+function RequestList({ requestData, onSelectRequest, toogleNewRequestForm }) {
   return (
-    <ul>
-      {requestData.map((request) => (
-        <Request
-          key={request.id}
-          request={request}
-          onSelectRequest={onSelectRequest}
-        />
-      ))}
-    </ul>
+    <>
+      <button onClick={toogleNewRequestForm}>Create New Request</button>
+      <ul>
+        {requestData.map((request) => (
+          <Request
+            key={request.id}
+            request={request}
+            onSelectRequest={onSelectRequest}
+          />
+        ))}
+      </ul>
+    </>
   );
 }
 
@@ -118,26 +144,59 @@ function Request({ request, onSelectRequest }) {
 }
 
 // Component for the new request form
-function NewRequestForm() {
+function NewRequestForm({ onSubmit }) {
+  // State to manage the form inputs
+  const [requestType, setRequestType] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [remarks, setRemarks] = useState("");
+
+  // New request object to be submitted
+  const newRequest = {
+    id: Date.now() + Math.random(),
+    requestType,
+    from: fromDate,
+    to: toDate,
+    remarks,
+    status: "Pending",
+  };
+
   return (
     <form>
       <label>Request Type :</label>
-      <select>
+      <select
+        value={requestType}
+        onChange={(e) => setRequestType(e.target.value)}
+      >
         <option value="Vacation Leave">Vacation Leave</option>
         <option value="Sick Leave">Sick Leave</option>
         <option value="Absent">Absent</option>
       </select>
 
       <label>From :</label>
-      <input type="date" name="from" />
+      <input
+        type="date"
+        name="from"
+        value={fromDate}
+        onChange={(e) => setFromDate(e.target.value)}
+      />
 
       <label>To :</label>
-      <input type="date" name="to" />
+      <input
+        type="date"
+        name="to"
+        value={toDate}
+        onChange={(e) => setToDate(e.target.value)}
+      />
 
       <label>Remarks :</label>
-      <textarea name="remarks" />
+      <textarea
+        name="remarks"
+        value={remarks}
+        onChange={(e) => setRemarks(e.target.value)}
+      />
 
-      <button>Submit</button>
+      <button onClick={(e) => onSubmit(e, newRequest)}>Submit</button>
       <button>Cancel</button>
     </form>
   );
