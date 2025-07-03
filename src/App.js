@@ -32,6 +32,9 @@ export default function App() {
   const [viewRequestIsOpen, setViewRequestIsOpen] = useState(false);
   const [newRequestIsOpen, setNewRequestIsOpen] = useState(false);
 
+  // State to manage the request data
+  const [requestData, setRequestData] = useState(initialRequestData);
+
   // State to manage the selected request for viewing
   const [selectedRequest, setSelectedRequest] = useState(null);
 
@@ -46,26 +49,51 @@ export default function App() {
     request.id === selectedRequest?.id
       ? setViewRequestIsOpen(false)
       : setViewRequestIsOpen(true);
+
+    // Close the new request form if it is open
+    setNewRequestIsOpen(false);
+  }
+
+  // Function to handle canceling a request
+  function handleCancelRequest(id) {
+    // Logic to cancel the request can be added here
+
+    // Remove the request from the requestData state
+    setRequestData((requestData) =>
+      requestData.filter((request) => request.id !== id)
+    );
+
+    // Reset the selected request and close the view request form
+    setSelectedRequest(null);
+    setViewRequestIsOpen(false);
   }
 
   return (
     <div className="app">
       <div className="sidebar">
-        <RequestList onSelectRequest={handleSelectRequest} />
+        <RequestList
+          requestData={requestData}
+          onSelectRequest={handleSelectRequest}
+        />
       </div>
       <div className="main-content">
         {newRequestIsOpen && <NewRequestForm />}
-        {viewRequestIsOpen && <ViewRequestForm request={selectedRequest} />}
+        {viewRequestIsOpen && (
+          <ViewRequestForm
+            request={selectedRequest}
+            onCancelRequest={handleCancelRequest}
+          />
+        )}
       </div>
     </div>
   );
 }
 
 // Component to display the list of leave requests
-function RequestList({ onSelectRequest }) {
+function RequestList({ onSelectRequest, requestData }) {
   return (
     <ul>
-      {initialRequestData.map((request) => (
+      {requestData.map((request) => (
         <Request
           key={request.id}
           request={request}
@@ -116,7 +144,7 @@ function NewRequestForm() {
 }
 
 // Component to view a specific leave request
-function ViewRequestForm({ request }) {
+function ViewRequestForm({ request, onCancelRequest }) {
   return (
     <div className="view-request">
       <h2>{request?.requestType}</h2>
@@ -129,7 +157,11 @@ function ViewRequestForm({ request }) {
       <label>Status :</label>
       <span>{request?.status}</span>
       {/* // Conditional rendering based on request status */}
-      {request?.status === "Pending" && <button>Cancel Request</button>}
+      {request?.status === "Pending" && (
+        <button onClick={() => onCancelRequest(request?.id)}>
+          Cancel Request
+        </button>
+      )}
     </div>
   );
 }
