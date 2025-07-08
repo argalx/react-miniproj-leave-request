@@ -1,10 +1,57 @@
 import { useState } from "react";
 
-// Initial data for leave requests
-const initialRequestData = [
+// Initial data for User Data
+const initialUserData = [
+  {
+    employeeId: 15618,
+    firstName: "Juan Bartolome",
+    lastName: "Munoz",
+    managerId: 15618,
+  },
+  {
+    employeeId: 15617,
+    firstName: "Ferdinand",
+    lastName: "Escolar",
+    managerId: 15618,
+  },
+  {
+    employeeId: 15615,
+    firstName: "Arvin",
+    lastName: "Bonggal",
+    managerId: 15617,
+  },
+];
+
+// Initial data for Request Types
+const initialRequestTypes = [
   {
     id: 1,
     requestType: "Vacation Leave",
+  },
+  {
+    id: 2,
+    requestType: "Sick Leave",
+  },
+  {
+    id: 3,
+    requestType: "Absent",
+  },
+  {
+    id: 4,
+    requestType: "Bereavement Leave",
+  },
+  {
+    id: 5,
+    requestType: "Maternity Leave",
+  },
+];
+
+// Initial data for Requests
+const initialRequestData = [
+  {
+    id: 1,
+    employeeId: 15615,
+    requestTypeId: 1,
     from: "07-01-2023",
     to: "07-02-2023",
     remarks: "Family vacation",
@@ -12,7 +59,8 @@ const initialRequestData = [
   },
   {
     id: 2,
-    requestType: "Sick Leave",
+    employeeId: 15615,
+    requestTypeId: 2,
     from: "07-03-2023",
     to: "07-05-2023",
     remarks: "Medical reasons",
@@ -20,7 +68,8 @@ const initialRequestData = [
   },
   {
     id: 3,
-    requestType: "Absent",
+    employeeId: 15615,
+    requestTypeId: 3,
     from: "07-06-2023",
     to: "07-06-2023",
     remarks: "Personal matters",
@@ -82,7 +131,7 @@ export default function App() {
     e.preventDefault();
 
     // Validate fields if it has data
-    if (!newRequest.requestType) {
+    if (!newRequest.requestTypeId) {
       alert("Please select a request type.");
       return;
     }
@@ -115,6 +164,7 @@ export default function App() {
     setNewRequestIsOpen(false);
   }
 
+  // Function to handle canceling the new request form
   function handleCancelNewRequest(e) {
     // Close the new request form without submitting
     e.preventDefault();
@@ -143,6 +193,7 @@ export default function App() {
           <ViewRequestForm
             request={selectedRequest}
             onCancelRequest={handleCancelRequest}
+            initialRequestTypes={initialRequestTypes}
           />
         )}
       </div>
@@ -161,6 +212,7 @@ function RequestList({ requestData, onSelectRequest, toogleNewRequestForm }) {
             key={request.id}
             request={request}
             onSelectRequest={onSelectRequest}
+            initialRequestTypes={initialRequestTypes}
           />
         ))}
       </ul>
@@ -170,9 +222,16 @@ function RequestList({ requestData, onSelectRequest, toogleNewRequestForm }) {
 
 // Component to display individual leave requests
 function Request({ request, onSelectRequest }) {
+  const requestTypes = initialRequestTypes;
+
   return (
     <li onClick={() => onSelectRequest(request)}>
-      <p>{request.requestType}</p>
+      <p>
+        {/* // Display the request type based on the requestTypeId */}
+        {requestTypes
+          .filter((requestType) => requestType.id === request.requestTypeId)
+          .map((request) => request.requestType)}
+      </p>
       <p>
         From {request.from} to {request.to}
       </p>
@@ -183,8 +242,10 @@ function Request({ request, onSelectRequest }) {
 
 // Component for the new request form
 function NewRequestForm({ onSubmit, onCancel }) {
+  const requestTypes = initialRequestTypes;
+
   // State to manage the form inputs
-  const [requestType, setRequestType] = useState("");
+  const [requestTypeId, setRequestTypeId] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [remarks, setRemarks] = useState("");
@@ -192,7 +253,7 @@ function NewRequestForm({ onSubmit, onCancel }) {
   // New request object to be submitted
   const newRequest = {
     id: Date.now() + Math.random(),
-    requestType,
+    requestTypeId: Number(requestTypeId),
     from: fromDate,
     to: toDate,
     remarks,
@@ -203,15 +264,18 @@ function NewRequestForm({ onSubmit, onCancel }) {
     <form>
       <label>Request Type :</label>
       <select
-        value={requestType}
-        onChange={(e) => setRequestType(e.target.value)}
+        value={requestTypeId}
+        onChange={(e) => setRequestTypeId(e.target.value)}
       >
         <option value="" disabled>
           --select request type--
         </option>
-        <option value="Vacation Leave">Vacation Leave</option>
-        <option value="Sick Leave">Sick Leave</option>
-        <option value="Absent">Absent</option>
+        {/* // Map through requestTypes to create optionss */}
+        {requestTypes.map((requestType) => (
+          <option key={requestType.id} value={requestType.id}>
+            {requestType.requestType}
+          </option>
+        ))}
       </select>
 
       <label>From :</label>
@@ -250,9 +314,16 @@ function NewRequestForm({ onSubmit, onCancel }) {
 
 // Component to view a specific leave request
 function ViewRequestForm({ request, onCancelRequest }) {
+  const requestTypes = initialRequestTypes;
+
   return (
     <div className="view-request">
-      <h2>{request?.requestType}</h2>
+      <h2>
+        {/* // Display the request type based on the requestTypeId */}
+        {requestTypes
+          .filter((requestType) => requestType.id === request?.requestTypeId)
+          .map((request) => request.requestType)}
+      </h2>
       <label>From :</label>
       <span>{request?.from}</span>
       <label>To :</label>
