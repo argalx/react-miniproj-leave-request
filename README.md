@@ -11,6 +11,9 @@
       - firstName
       - lastName
       - managerId
+    - RequestType
+      - id
+      - requestType
 - Adjust Styling
 
 # Getting Started with Create React App
