@@ -88,6 +88,14 @@ export default function App() {
     setNewRequestIsOpen(false);
   }
 
+  function handleCancelNewRequest(e) {
+    // Close the new request form without submitting
+    e.preventDefault();
+
+    // Reset the new request form state
+    setNewRequestIsOpen(false);
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
@@ -99,7 +107,10 @@ export default function App() {
       </div>
       <div className="main-content">
         {newRequestIsOpen && (
-          <NewRequestForm onSubmit={handleSubmitNewRequest} />
+          <NewRequestForm
+            onSubmit={handleSubmitNewRequest}
+            onCancel={handleCancelNewRequest}
+          />
         )}
         {viewRequestIsOpen && (
           <ViewRequestForm
@@ -144,7 +155,7 @@ function Request({ request, onSelectRequest }) {
 }
 
 // Component for the new request form
-function NewRequestForm({ onSubmit }) {
+function NewRequestForm({ onSubmit, onCancel }) {
   // State to manage the form inputs
   const [requestType, setRequestType] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -197,7 +208,7 @@ function NewRequestForm({ onSubmit }) {
       />
 
       <button onClick={(e) => onSubmit(e, newRequest)}>Submit</button>
-      <button>Cancel</button>
+      <button onClick={(e) => onCancel(e)}>Cancel</button>
     </form>
   );
 }

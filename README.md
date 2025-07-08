@@ -1,7 +1,16 @@
 # TODO
 
-- Handle New Request Cancel Click
 - New Request Form Validation
+- Adjust Data
+  - To Be Modified:
+    - Request
+      - employeeId
+  - To Be Added:
+    - User
+      - employeeId
+      - firstName
+      - lastName
+      - managerId
 
 # Getting Started with Create React App
 
