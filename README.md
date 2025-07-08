@@ -11,6 +11,7 @@
       - firstName
       - lastName
       - managerId
+- Adjust Styling
 
 # Getting Started with Create React App
 
