@@ -1,6 +1,5 @@
 # TODO
 
-- New Request Form Validation
 - Adjust Data
   - To Be Modified:
     - Request

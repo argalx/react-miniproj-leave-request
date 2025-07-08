@@ -76,11 +76,38 @@ export default function App() {
     setNewRequestIsOpen(true);
   }
 
-  // Function to handle the submission of a new request
-  function handleSubmitNewRequest(e, newRequest) {
+  // Function to handle validation of the new request
+  function handleNewRequestValidation(e, newRequest) {
     // Prevent the default form submission behavior
     e.preventDefault();
 
+    // Validate fields if it has data
+    if (!newRequest.requestType) {
+      alert("Please select a request type.");
+      return;
+    }
+
+    if (!newRequest.from) {
+      alert("Please select a from date.");
+      return;
+    }
+
+    if (!newRequest.to) {
+      alert("Please select a to date.");
+      return;
+    }
+
+    if (!newRequest.remarks) {
+      alert("Please enter a remarks.");
+      return;
+    }
+
+    // If all fields are valid, proceed to submit the new request
+    handleSubmitNewRequest(newRequest);
+  }
+
+  // Function to handle the submission of a new request
+  function handleSubmitNewRequest(newRequest) {
     // Update the requestData state with the new request
     setRequestData((prevRequestData) => [...prevRequestData, newRequest]);
 
@@ -108,7 +135,7 @@ export default function App() {
       <div className="main-content">
         {newRequestIsOpen && (
           <NewRequestForm
-            onSubmit={handleSubmitNewRequest}
+            onSubmit={handleNewRequestValidation}
             onCancel={handleCancelNewRequest}
           />
         )}
@@ -179,6 +206,9 @@ function NewRequestForm({ onSubmit, onCancel }) {
         value={requestType}
         onChange={(e) => setRequestType(e.target.value)}
       >
+        <option value="" disabled>
+          --select request type--
+        </option>
         <option value="Vacation Leave">Vacation Leave</option>
         <option value="Sick Leave">Sick Leave</option>
         <option value="Absent">Absent</option>
@@ -186,7 +216,9 @@ function NewRequestForm({ onSubmit, onCancel }) {
 
       <label>From :</label>
       <input
-        type="date"
+        placeholder="--select date--"
+        onFocus={(e) => (e.target.type = "date")}
+        onBlur={(e) => (e.target.type = "text")}
         name="from"
         value={fromDate}
         onChange={(e) => setFromDate(e.target.value)}
@@ -194,7 +226,9 @@ function NewRequestForm({ onSubmit, onCancel }) {
 
       <label>To :</label>
       <input
-        type="date"
+        placeholder="--select date--"
+        onFocus={(e) => (e.target.type = "date")}
+        onBlur={(e) => (e.target.type = "text")}
         name="to"
         value={toDate}
         onChange={(e) => setToDate(e.target.value)}
@@ -202,6 +236,7 @@ function NewRequestForm({ onSubmit, onCancel }) {
 
       <label>Remarks :</label>
       <textarea
+        placeholder="--remarks--"
         name="remarks"
         value={remarks}
         onChange={(e) => setRemarks(e.target.value)}
