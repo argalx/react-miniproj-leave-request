@@ -1,18 +1,12 @@
 # TODO
 
 - Adjust Data
-  - To Be Modified:
-    - Request
-      - employeeId
   - To Be Added:
-    - User
-      - employeeId
-      - firstName
-      - lastName
-      - managerId
-    - RequestType
+    - Status
       - id
-      - requestType
+      - status
+- Apply User Based Filling and Viewing of Request
+- Add Approval Module
 - Adjust Styling
 
 # Getting Started with Create React App
