@@ -103,6 +103,9 @@ export default function App() {
   // State to manage the selected request for viewing
   const [selectedRequest, setSelectedRequest] = useState(null);
 
+  // State to manage the user data
+  const [user, setUser] = useState(null);
+
   // Function to handle viewing a request
   function handleSelectRequest(request) {
     // Set the selected request based on the clicked item
@@ -188,9 +191,20 @@ export default function App() {
     setNewRequestIsOpen(false);
   }
 
+  // Function to handle user selection
+  function handleUserSelect(employeeId) {
+    setUser(employeeId);
+    console.log("Selected User ID:", employeeId);
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
+        <User
+          initialUserData={initialUserData}
+          onUserSelect={handleUserSelect}
+        />
+        <br />
         <RequestList
           requestData={requestData}
           onSelectRequest={handleSelectRequest}
@@ -216,6 +230,21 @@ export default function App() {
         )}
       </div>
     </div>
+  );
+}
+
+// Component to manage user data
+function User({ initialUserData, onUserSelect }) {
+  return (
+    <select>
+      {initialUserData.map((user) => (
+        <option
+          key={user.employeeId}
+          value={user.employeeId}
+          onChange={(e) => onUserSelect(e.target.value)}
+        >{`${user.firstName} ${user.lastName}`}</option>
+      ))}
+    </select>
   );
 }
 
