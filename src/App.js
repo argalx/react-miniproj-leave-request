@@ -46,6 +46,21 @@ const initialRequestTypes = [
   },
 ];
 
+const initialStatusData = [
+  {
+    id: 1,
+    status: "Pending",
+  },
+  {
+    id: 2,
+    status: "Approved",
+  },
+  {
+    id: 3,
+    status: "Rejected",
+  },
+];
+
 // Initial data for Requests
 const initialRequestData = [
   {
@@ -55,7 +70,7 @@ const initialRequestData = [
     from: "07-01-2023",
     to: "07-02-2023",
     remarks: "Family vacation",
-    status: "Approved",
+    status: 2,
   },
   {
     id: 2,
@@ -64,7 +79,7 @@ const initialRequestData = [
     from: "07-03-2023",
     to: "07-05-2023",
     remarks: "Medical reasons",
-    status: "Pending",
+    status: 1,
   },
   {
     id: 3,
@@ -73,7 +88,7 @@ const initialRequestData = [
     from: "07-06-2023",
     to: "07-06-2023",
     remarks: "Personal matters",
-    status: "Rejected",
+    status: 3,
   },
 ];
 
@@ -180,6 +195,8 @@ export default function App() {
           requestData={requestData}
           onSelectRequest={handleSelectRequest}
           toogleNewRequestForm={toogleNewRequestForm}
+          initialRequestTypes={initialRequestTypes}
+          initialStatusData={initialStatusData}
         />
       </div>
       <div className="main-content">
@@ -194,6 +211,7 @@ export default function App() {
             request={selectedRequest}
             onCancelRequest={handleCancelRequest}
             initialRequestTypes={initialRequestTypes}
+            initialStatusData={initialStatusData}
           />
         )}
       </div>
@@ -202,7 +220,13 @@ export default function App() {
 }
 
 // Component to display the list of leave requests
-function RequestList({ requestData, onSelectRequest, toogleNewRequestForm }) {
+function RequestList({
+  requestData,
+  onSelectRequest,
+  toogleNewRequestForm,
+  initialRequestTypes,
+  initialStatusData,
+}) {
   return (
     <>
       <button onClick={toogleNewRequestForm}>Create New Request</button>
@@ -213,6 +237,7 @@ function RequestList({ requestData, onSelectRequest, toogleNewRequestForm }) {
             request={request}
             onSelectRequest={onSelectRequest}
             initialRequestTypes={initialRequestTypes}
+            initialStatusData={initialStatusData}
           />
         ))}
       </ul>
@@ -221,8 +246,14 @@ function RequestList({ requestData, onSelectRequest, toogleNewRequestForm }) {
 }
 
 // Component to display individual leave requests
-function Request({ request, onSelectRequest }) {
+function Request({
+  request,
+  onSelectRequest,
+  initialRequestTypes,
+  initialStatusData,
+}) {
   const requestTypes = initialRequestTypes;
+  const statusData = initialStatusData;
 
   return (
     <li onClick={() => onSelectRequest(request)}>
@@ -235,7 +266,11 @@ function Request({ request, onSelectRequest }) {
       <p>
         From {request.from} to {request.to}
       </p>
-      <p>{request.status}</p>
+      <p>
+        {statusData
+          .filter((status) => status.id === request.status)
+          .map((status) => status.status)}
+      </p>
     </li>
   );
 }
@@ -313,8 +348,14 @@ function NewRequestForm({ onSubmit, onCancel }) {
 }
 
 // Component to view a specific leave request
-function ViewRequestForm({ request, onCancelRequest }) {
+function ViewRequestForm({
+  request,
+  onCancelRequest,
+  initialRequestTypes,
+  initialStatusData,
+}) {
   const requestTypes = initialRequestTypes;
+  const statusData = initialStatusData;
 
   return (
     <div className="view-request">
@@ -331,9 +372,13 @@ function ViewRequestForm({ request, onCancelRequest }) {
       <label>Remarks :</label>
       <span>{request?.remarks}</span>
       <label>Status :</label>
-      <span>{request?.status}</span>
+      <span>
+        {statusData
+          .filter((status) => status.id === request?.status)
+          .map((status) => status.status)}
+      </span>
       {/* // Conditional rendering based on request status */}
-      {request?.status === "Pending" && (
+      {request?.status === 1 && (
         <button onClick={() => onCancelRequest(request?.id)}>
           Cancel Request
         </button>

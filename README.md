@@ -1,10 +1,5 @@
 # TODO
 
-- Adjust Data
-  - To Be Added:
-    - Status
-      - id
-      - status
 - Apply User Based Filling and Viewing of Request
 - Add Approval Module
 - Adjust Styling
