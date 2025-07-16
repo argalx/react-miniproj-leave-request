@@ -194,6 +194,9 @@ export default function App() {
   // Function to handle user selection
   function handleUserSelect(employeeId) {
     setUser(employeeId);
+
+    setViewRequestIsOpen(false);
+    setNewRequestIsOpen(false);
   }
 
   return (
@@ -218,6 +221,7 @@ export default function App() {
           <NewRequestForm
             onSubmit={handleNewRequestValidation}
             onCancel={handleCancelNewRequest}
+            currentUser={user}
           />
         )}
         {viewRequestIsOpen && (
@@ -264,10 +268,12 @@ function RequestList({
   initialStatusData,
   currentUser,
 }) {
-  console.log("currentUser", currentUser);
   return (
     <>
-      <button onClick={toogleNewRequestForm}>Create New Request</button>
+      {currentUser && (
+        <button onClick={toogleNewRequestForm}>Create New Request</button>
+      )}
+
       <ul>
         {/* // Filter and map through requestData to display requests for the current user */}
         {requestData
@@ -317,7 +323,7 @@ function Request({
 }
 
 // Component for the new request form
-function NewRequestForm({ onSubmit, onCancel }) {
+function NewRequestForm({ onSubmit, onCancel, currentUser }) {
   const requestTypes = initialRequestTypes;
 
   // State to manage the form inputs
@@ -329,11 +335,12 @@ function NewRequestForm({ onSubmit, onCancel }) {
   // New request object to be submitted
   const newRequest = {
     id: Date.now() + Math.random(),
+    employeeId: currentUser,
     requestTypeId: Number(requestTypeId),
     from: fromDate,
     to: toDate,
     remarks,
-    status: "Pending",
+    status: 1,
   };
 
   return (
