@@ -2,6 +2,8 @@
 
 - Add Approval Module
 - Adjust Styling
+- Refactor
+- Convert to SPFx
 
 # Getting Started with Create React App
 
