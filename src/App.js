@@ -270,6 +270,7 @@ function RequestList({
 }) {
   return (
     <>
+      {/* // Button to create a new request, only visible if a user is selected */}
       {currentUser && (
         <button onClick={toogleNewRequestForm}>Create New Request</button>
       )}
