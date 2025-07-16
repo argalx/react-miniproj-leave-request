@@ -194,7 +194,6 @@ export default function App() {
   // Function to handle user selection
   function handleUserSelect(employeeId) {
     setUser(employeeId);
-    console.log("Selected User ID:", employeeId);
   }
 
   return (
@@ -211,6 +210,7 @@ export default function App() {
           toogleNewRequestForm={toogleNewRequestForm}
           initialRequestTypes={initialRequestTypes}
           initialStatusData={initialStatusData}
+          currentUser={user}
         />
       </div>
       <div className="main-content">
@@ -235,13 +235,20 @@ export default function App() {
 
 // Component to manage user data
 function User({ initialUserData, onUserSelect }) {
+  const userData = initialUserData;
+
   return (
-    <select>
-      {initialUserData.map((user) => (
+    <select
+      defaultValue=""
+      onChange={(e) => onUserSelect(Number(e?.target.value))}
+    >
+      <option value="" disabled>
+        --Select User--
+      </option>
+      {userData.map((user) => (
         <option
           key={user.employeeId}
           value={user.employeeId}
-          onChange={(e) => onUserSelect(e.target.value)}
         >{`${user.firstName} ${user.lastName}`}</option>
       ))}
     </select>
@@ -255,20 +262,25 @@ function RequestList({
   toogleNewRequestForm,
   initialRequestTypes,
   initialStatusData,
+  currentUser,
 }) {
+  console.log("currentUser", currentUser);
   return (
     <>
       <button onClick={toogleNewRequestForm}>Create New Request</button>
       <ul>
-        {requestData.map((request) => (
-          <Request
-            key={request.id}
-            request={request}
-            onSelectRequest={onSelectRequest}
-            initialRequestTypes={initialRequestTypes}
-            initialStatusData={initialStatusData}
-          />
-        ))}
+        {/* // Filter and map through requestData to display requests for the current user */}
+        {requestData
+          .filter((request) => request.employeeId === currentUser)
+          .map((request) => (
+            <Request
+              key={request.id}
+              request={request}
+              onSelectRequest={onSelectRequest}
+              initialRequestTypes={initialRequestTypes}
+              initialStatusData={initialStatusData}
+            />
+          ))}
       </ul>
     </>
   );

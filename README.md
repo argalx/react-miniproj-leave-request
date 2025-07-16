@@ -1,10 +1,6 @@
-# TO RESOLVE
-
-![alt text](./public/image.png)
-
 # TODO
 
-- Apply User Based Filling and Viewing of Request
+- Apply User Based Filling
 - Add Approval Module
 - Adjust Styling
 
