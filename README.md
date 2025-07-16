@@ -3,6 +3,10 @@
 - Add Approval Module
 - Adjust Styling
 - Refactor
+- Store data in SQL Database
+
+# Future Update
+
 - Convert to SPFx
 
 # Getting Started with Create React App
