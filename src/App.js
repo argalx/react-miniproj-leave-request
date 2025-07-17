@@ -100,6 +100,9 @@ export default function App() {
   // State to manage the request data
   const [requestData, setRequestData] = useState(initialRequestData);
 
+  // State to manage the user data
+  const [userData, setUserData] = useState(initialUserData);
+
   // State to manage the selected request for viewing
   const [selectedRequest, setSelectedRequest] = useState(null);
 
@@ -199,6 +202,31 @@ export default function App() {
     setNewRequestIsOpen(false);
   }
 
+  // Function to filter request data based on the selected user
+  function filterRequestData(requestData, userData, currentUser, requestType) {
+    let filteredData = [];
+
+    if (requestType === "MyRequests") {
+      filteredData = requestData.filter(
+        (request) => request.employeeId === currentUser
+      );
+    }
+
+    // Study flat map
+    if (requestType === "ForApproval") {
+      filteredData = userData
+        .filter((user) => user.managerId === currentUser)
+        .flatMap((user) =>
+          requestData.filter(
+            (request) =>
+              request.employeeId === user.employeeId && request.status === 1
+          )
+        );
+    }
+
+    return filteredData;
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
@@ -207,14 +235,40 @@ export default function App() {
           onUserSelect={handleUserSelect}
         />
         <br />
+        {/* // Button to create a new request, only visible if a user is selected */}
+        {user && (
+          <button onClick={toogleNewRequestForm}>Create New Request</button>
+        )}
         <RequestList
-          requestData={requestData}
+          requestData={filterRequestData(
+            requestData,
+            userData,
+            user,
+            "MyRequests"
+          )}
           onSelectRequest={handleSelectRequest}
           toogleNewRequestForm={toogleNewRequestForm}
           initialRequestTypes={initialRequestTypes}
           initialStatusData={initialStatusData}
           currentUser={user}
-        />
+        >
+          My Requests
+        </RequestList>
+        <RequestList
+          requestData={filterRequestData(
+            requestData,
+            userData,
+            user,
+            "ForApproval"
+          )}
+          onSelectRequest={handleSelectRequest}
+          toogleNewRequestForm={toogleNewRequestForm}
+          initialRequestTypes={initialRequestTypes}
+          initialStatusData={initialStatusData}
+          currentUser={user}
+        >
+          For Approval
+        </RequestList>
       </div>
       <div className="main-content">
         {newRequestIsOpen && (
@@ -263,31 +317,24 @@ function User({ initialUserData, onUserSelect }) {
 function RequestList({
   requestData,
   onSelectRequest,
-  toogleNewRequestForm,
   initialRequestTypes,
   initialStatusData,
-  currentUser,
+  children,
 }) {
+  console.log("Request Data:", requestData);
   return (
     <>
-      {/* // Button to create a new request, only visible if a user is selected */}
-      {currentUser && (
-        <button onClick={toogleNewRequestForm}>Create New Request</button>
-      )}
-
+      <h2>{children}</h2>
       <ul>
-        {/* // Filter and map through requestData to display requests for the current user */}
-        {requestData
-          .filter((request) => request.employeeId === currentUser)
-          .map((request) => (
-            <Request
-              key={request.id}
-              request={request}
-              onSelectRequest={onSelectRequest}
-              initialRequestTypes={initialRequestTypes}
-              initialStatusData={initialStatusData}
-            />
-          ))}
+        {requestData.map((request) => (
+          <Request
+            key={request.id}
+            request={request}
+            onSelectRequest={onSelectRequest}
+            initialRequestTypes={initialRequestTypes}
+            initialStatusData={initialStatusData}
+          />
+        ))}
       </ul>
     </>
   );
