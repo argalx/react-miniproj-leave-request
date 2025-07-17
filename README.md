@@ -1,4 +1,8 @@
-# TODO
+# TO STUDY
+
+- flatMap()
+
+# TO DO
 
 - Add Approval Module
 - Adjust Styling
