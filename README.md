@@ -1,10 +1,9 @@
-# TO STUDY
-
-- flatMap()
-
 # TO DO
 
 - Add Approval Module
+  - Add approval logic
+  - Add reject logic
+- Apply Requester Name in Approval Lists
 - Adjust Styling
 - Refactor
 - Store data in SQL Database

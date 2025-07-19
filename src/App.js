@@ -212,10 +212,10 @@ export default function App() {
       );
     }
 
-    // Study flat map
     if (requestType === "ForApproval") {
       filteredData = userData
         .filter((user) => user.managerId === currentUser)
+        // flatMap = Maps over the array and flattens them into single array.
         .flatMap((user) =>
           requestData.filter(
             (request) =>
@@ -225,6 +225,16 @@ export default function App() {
     }
 
     return filteredData;
+  }
+
+  function handleApproveRequest() {
+    // Approve request logic
+    alert("Request Approved");
+  }
+
+  function handleRejectRequest() {
+    // Reject request logic
+    alert("Request Rejected");
   }
 
   return (
@@ -280,8 +290,11 @@ export default function App() {
         )}
         {viewRequestIsOpen && (
           <ViewRequestForm
+            currentUser={user}
             request={selectedRequest}
             onCancelRequest={handleCancelRequest}
+            onApproveRequest={handleApproveRequest}
+            onRejectRequest={handleRejectRequest}
             initialRequestTypes={initialRequestTypes}
             initialStatusData={initialStatusData}
           />
@@ -445,8 +458,11 @@ function NewRequestForm({ onSubmit, onCancel, currentUser }) {
 
 // Component to view a specific leave request
 function ViewRequestForm({
+  currentUser,
   request,
   onCancelRequest,
+  onApproveRequest,
+  onRejectRequest,
   initialRequestTypes,
   initialStatusData,
 }) {
@@ -473,12 +489,19 @@ function ViewRequestForm({
           .filter((status) => status.id === request?.status)
           .map((status) => status.status)}
       </span>
-      {/* // Conditional rendering based on request status */}
-      {request?.status === 1 && (
-        <button onClick={() => onCancelRequest(request?.id)}>
-          Cancel Request
-        </button>
-      )}
+      {/* // Conditional rendering of buttons based on request status current user viewing the request */}
+      {currentUser !== request?.employeeId
+        ? request?.status === 1 && (
+            <>
+              <button onClick={onApproveRequest}>Approve</button>
+              <button onClick={onRejectRequest}>Reject</button>
+            </>
+          )
+        : request?.status === 1 && (
+            <button onClick={() => onCancelRequest(request?.id)}>
+              Cancel Request
+            </button>
+          )}
     </div>
   );
 }
