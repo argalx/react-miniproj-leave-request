@@ -1,9 +1,8 @@
 # TO DO
 
-- Add Approval Module
-  - Add approval logic
-  - Add reject logic
 - Apply Requester Name in Approval Lists
+- Find & Fix Bugs
+- Add User, Status, Request Type CRUD
 - Adjust Styling
 - Refactor
 - Store data in SQL Database

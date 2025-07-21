@@ -46,6 +46,7 @@ const initialRequestTypes = [
   },
 ];
 
+// Initial data for Status
 const initialStatusData = [
   {
     id: 1,
@@ -227,14 +228,23 @@ export default function App() {
     return filteredData;
   }
 
-  function handleApproveRequest() {
-    // Approve request logic
-    alert("Request Approved");
-  }
+  // Function to handle request approval
+  function handleRequestApproval(id, status) {
+    // Update status of current request
+    setRequestData((requestData) =>
+      // Map through each request record
+      requestData.map((request) =>
+        // Check if currect request match the ID of request that needs to be updated and set its status to 2 = Approved, 3 = Rejected
+        request.id === id ? { ...request, status: status } : request
+      )
+    );
 
-  function handleRejectRequest() {
-    // Reject request logic
-    alert("Request Rejected");
+    // Reset View Form
+    setViewRequestIsOpen(false);
+
+    // Alert based on approval action
+    status === 2 && alert("Request Approved");
+    status === 3 && alert("Request Rejected");
   }
 
   return (
@@ -293,8 +303,7 @@ export default function App() {
             currentUser={user}
             request={selectedRequest}
             onCancelRequest={handleCancelRequest}
-            onApproveRequest={handleApproveRequest}
-            onRejectRequest={handleRejectRequest}
+            onRequestApproval={handleRequestApproval}
             initialRequestTypes={initialRequestTypes}
             initialStatusData={initialStatusData}
           />
@@ -461,8 +470,7 @@ function ViewRequestForm({
   currentUser,
   request,
   onCancelRequest,
-  onApproveRequest,
-  onRejectRequest,
+  onRequestApproval,
   initialRequestTypes,
   initialStatusData,
 }) {
@@ -493,8 +501,12 @@ function ViewRequestForm({
       {currentUser !== request?.employeeId
         ? request?.status === 1 && (
             <>
-              <button onClick={onApproveRequest}>Approve</button>
-              <button onClick={onRejectRequest}>Reject</button>
+              <button onClick={() => onRequestApproval(request.id, 2)}>
+                Approve
+              </button>
+              <button onClick={() => onRequestApproval(request.id, 3)}>
+                Reject
+              </button>
             </>
           )
         : request?.status === 1 && (
