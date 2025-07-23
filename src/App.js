@@ -50,7 +50,7 @@ const initialRequestTypes = [
 const initialStatusData = [
   {
     id: 1,
-    status: "Pending",
+    status: "Pending For Approval",
   },
   {
     id: 2,
@@ -71,7 +71,7 @@ const initialRequestData = [
     from: "07-01-2023",
     to: "07-02-2023",
     remarks: "Family vacation",
-    status: 2,
+    statusId: 2,
   },
   {
     id: 2,
@@ -80,7 +80,7 @@ const initialRequestData = [
     from: "07-03-2023",
     to: "07-05-2023",
     remarks: "Medical reasons",
-    status: 1,
+    statusId: 1,
   },
   {
     id: 3,
@@ -89,7 +89,7 @@ const initialRequestData = [
     from: "07-06-2023",
     to: "07-06-2023",
     remarks: "Personal matters",
-    status: 3,
+    statusId: 3,
   },
 ];
 
@@ -100,9 +100,6 @@ export default function App() {
 
   // State to manage the request data
   const [requestData, setRequestData] = useState(initialRequestData);
-
-  // State to manage the user data
-  const [userData, setUserData] = useState(initialUserData);
 
   // State to manage the selected request for viewing
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -204,11 +201,14 @@ export default function App() {
   }
 
   // Function to filter request data based on the selected user
-  function filterRequestData(requestData, userData, currentUser, requestType) {
+  function filterRequestData(currentUser, requestType) {
+    const initialRequestData = requestData;
+    const userData = initialUserData;
+
     let filteredData = [];
 
     if (requestType === "MyRequests") {
-      filteredData = requestData.filter(
+      filteredData = initialRequestData.filter(
         (request) => request.employeeId === currentUser
       );
     }
@@ -220,7 +220,7 @@ export default function App() {
         .flatMap((user) =>
           requestData.filter(
             (request) =>
-              request.employeeId === user.employeeId && request.status === 1
+              request.employeeId === user.employeeId && request.statusId === 1
           )
         );
     }
@@ -235,7 +235,7 @@ export default function App() {
       // Map through each request record
       requestData.map((request) =>
         // Check if currect request match the ID of request that needs to be updated and set its status to 2 = Approved, 3 = Rejected
-        request.id === id ? { ...request, status: status } : request
+        request.id === id ? { ...request, statusId: status } : request
       )
     );
 
@@ -247,11 +247,40 @@ export default function App() {
     status === 3 && alert("Request Rejected");
   }
 
+  // Function to handle Request Type Look-Up
+  function handleRequestTypeLookUp(requestTypeId) {
+    const requestTypeData = initialRequestTypes;
+
+    return requestTypeData
+      .filter((requestType) => requestType.id === requestTypeId)
+      .map((requestType) => requestType.requestType);
+  }
+
+  // Function to handle User Data Look-Up
+  function handleUserLookUp(employeeId) {
+    const userData = initialUserData;
+
+    return userData
+      .filter((user) => user.employeeId === employeeId)
+      .map((user) => `${user.firstName} ${user.lastName}`);
+  }
+
+  // Function to handle Status Data Look-Up
+  function handleStatusLookUp(statusId) {
+    const statusData = initialStatusData;
+
+    return statusData
+      .filter((status) => status.id === statusId)
+      .map((status) => status.status);
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
         <User
+          // Data
           initialUserData={initialUserData}
+          // Function
           onUserSelect={handleUserSelect}
         />
         <br />
@@ -259,33 +288,30 @@ export default function App() {
         {user && (
           <button onClick={toogleNewRequestForm}>Create New Request</button>
         )}
+        {/* My Request List */}
         <RequestList
-          requestData={filterRequestData(
-            requestData,
-            userData,
-            user,
-            "MyRequests"
-          )}
+          // Data
+          requestData={filterRequestData(user, "MyRequests")}
+          currentUser={user}
+          // Function
           onSelectRequest={handleSelectRequest}
           toogleNewRequestForm={toogleNewRequestForm}
-          initialRequestTypes={initialRequestTypes}
-          initialStatusData={initialStatusData}
-          currentUser={user}
+          onRequestTypeLookUp={handleRequestTypeLookUp}
+          onStatusLookUp={handleStatusLookUp}
         >
           My Requests
         </RequestList>
+
+        {/* For Approval Lists */}
         <RequestList
-          requestData={filterRequestData(
-            requestData,
-            userData,
-            user,
-            "ForApproval"
-          )}
+          // Data
+          requestData={filterRequestData(user, "ForApproval")}
+          // Function
           onSelectRequest={handleSelectRequest}
           toogleNewRequestForm={toogleNewRequestForm}
-          initialRequestTypes={initialRequestTypes}
-          initialStatusData={initialStatusData}
-          currentUser={user}
+          onRequestTypeLookUp={handleRequestTypeLookUp}
+          onUserLookUp={handleUserLookUp}
+          onStatusLookUp={handleStatusLookUp}
         >
           For Approval
         </RequestList>
@@ -293,19 +319,24 @@ export default function App() {
       <div className="main-content">
         {newRequestIsOpen && (
           <NewRequestForm
+            // Data
+            currentUser={user}
+            // Function
             onSubmit={handleNewRequestValidation}
             onCancel={handleCancelNewRequest}
-            currentUser={user}
           />
         )}
         {viewRequestIsOpen && (
           <ViewRequestForm
+            // Data
             currentUser={user}
             request={selectedRequest}
+            // Function
             onCancelRequest={handleCancelRequest}
             onRequestApproval={handleRequestApproval}
-            initialRequestTypes={initialRequestTypes}
-            initialStatusData={initialStatusData}
+            onRequestTypeLookUp={handleRequestTypeLookUp}
+            onStatusLookUp={handleStatusLookUp}
+            onUserLookUp={handleUserLookUp}
           />
         )}
       </div>
@@ -314,7 +345,12 @@ export default function App() {
 }
 
 // Component to manage user data
-function User({ initialUserData, onUserSelect }) {
+function User({
+  // Data
+  initialUserData,
+  // Function
+  onUserSelect,
+}) {
   const userData = initialUserData;
 
   return (
@@ -337,13 +373,15 @@ function User({ initialUserData, onUserSelect }) {
 
 // Component to display the list of leave requests
 function RequestList({
+  // Function
   requestData,
   onSelectRequest,
-  initialRequestTypes,
-  initialStatusData,
   children,
+  currentUser,
+  onRequestTypeLookUp,
+  onUserLookUp,
+  onStatusLookUp,
 }) {
-  console.log("Request Data:", requestData);
   return (
     <>
       <h2>{children}</h2>
@@ -353,9 +391,15 @@ function RequestList({
             key={request.id}
             request={request}
             onSelectRequest={onSelectRequest}
-            initialRequestTypes={initialRequestTypes}
-            initialStatusData={initialStatusData}
-          />
+            onStatusLookUp={onStatusLookUp}
+          >
+            {/* // Display the request type based on the requestTypeId */}
+            {currentUser !== request.employeeId
+              ? `${onUserLookUp(request.employeeId)} ${onRequestTypeLookUp(
+                  request.requestTypeId
+                )} Request`
+              : onRequestTypeLookUp(request.requestTypeId)}
+          </Request>
         ))}
       </ul>
     </>
@@ -364,36 +408,32 @@ function RequestList({
 
 // Component to display individual leave requests
 function Request({
+  // Data
   request,
+  children,
+  // Function
   onSelectRequest,
-  initialRequestTypes,
-  initialStatusData,
+  onStatusLookUp,
 }) {
-  const requestTypes = initialRequestTypes;
-  const statusData = initialStatusData;
-
   return (
     <li onClick={() => onSelectRequest(request)}>
-      <p>
-        {/* // Display the request type based on the requestTypeId */}
-        {requestTypes
-          .filter((requestType) => requestType.id === request.requestTypeId)
-          .map((request) => request.requestType)}
-      </p>
+      <p>{children}</p>
       <p>
         From {request.from} to {request.to}
       </p>
-      <p>
-        {statusData
-          .filter((status) => status.id === request.status)
-          .map((status) => status.status)}
-      </p>
+      <p>{onStatusLookUp(request.statusId)}</p>
     </li>
   );
 }
 
 // Component for the new request form
-function NewRequestForm({ onSubmit, onCancel, currentUser }) {
+function NewRequestForm({
+  // Data
+  currentUser,
+  // Function
+  onSubmit,
+  onCancel,
+}) {
   const requestTypes = initialRequestTypes;
 
   // State to manage the form inputs
@@ -410,7 +450,7 @@ function NewRequestForm({ onSubmit, onCancel, currentUser }) {
     from: fromDate,
     to: toDate,
     remarks,
-    status: 1,
+    statusId: 1,
   };
 
   return (
@@ -467,23 +507,25 @@ function NewRequestForm({ onSubmit, onCancel, currentUser }) {
 
 // Component to view a specific leave request
 function ViewRequestForm({
+  // Data
   currentUser,
   request,
+  // Function
   onCancelRequest,
   onRequestApproval,
-  initialRequestTypes,
-  initialStatusData,
+  onStatusLookUp,
+  onRequestTypeLookUp,
+  onUserLookUp,
 }) {
-  const requestTypes = initialRequestTypes;
-  const statusData = initialStatusData;
-
   return (
     <div className="view-request">
       <h2>
         {/* // Display the request type based on the requestTypeId */}
-        {requestTypes
-          .filter((requestType) => requestType.id === request?.requestTypeId)
-          .map((request) => request.requestType)}
+        {currentUser !== request?.employeeId
+          ? `${onUserLookUp(request?.employeeId)} ${onRequestTypeLookUp(
+              request?.requestTypeId
+            )} Request`
+          : onRequestTypeLookUp(request?.requestTypeId)}
       </h2>
       <label>From :</label>
       <span>{request?.from}</span>
@@ -492,14 +534,10 @@ function ViewRequestForm({
       <label>Remarks :</label>
       <span>{request?.remarks}</span>
       <label>Status :</label>
-      <span>
-        {statusData
-          .filter((status) => status.id === request?.status)
-          .map((status) => status.status)}
-      </span>
+      <span>{onStatusLookUp(request?.statusId)}</span>
       {/* // Conditional rendering of buttons based on request status current user viewing the request */}
       {currentUser !== request?.employeeId
-        ? request?.status === 1 && (
+        ? request?.statusId === 1 && (
             <>
               <button onClick={() => onRequestApproval(request.id, 2)}>
                 Approve
@@ -509,7 +547,7 @@ function ViewRequestForm({
               </button>
             </>
           )
-        : request?.status === 1 && (
+        : request?.statusId === 1 && (
             <button onClick={() => onCancelRequest(request?.id)}>
               Cancel Request
             </button>
