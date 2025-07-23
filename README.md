@@ -1,6 +1,6 @@
 # TO DO
 
-- Apply Requester Name in Approval Lists
+- ~~Apply Requester Name in Approval Lists~~
 - Find & Fix Bugs
 - Add User, Status, Request Type CRUD
 - Adjust Styling
