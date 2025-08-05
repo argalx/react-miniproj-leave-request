@@ -13,31 +13,29 @@
 
 # Modules
 
-![alt text](image.png)
-
 ## Home
 
-![alt text](home.png)
+![alt text](./public/home.png)
 
 ## Select User
 
-![alt text](selectuser.png)
+![alt text](./public/selectuser.png)
 
 ## Create New Request
 
-![alt text](newrequest.png)
+![alt text](./public/newrequest.png)
 
 ## View Request
 
-![alt text](view.png)
+![alt text](./public/view.png)
 
 ## Cancel Request
 
-![alt text](cancelrequest.png)
+![alt text](./public/cancelrequest.png)
 
 ## Request Approval
 
-![alt text](requestapproval.png)
+![alt text](./public/requestapproval.png)
 
 # Future Update
 
