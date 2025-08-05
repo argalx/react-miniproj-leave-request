@@ -7,6 +7,36 @@
 - Refactor
 - Store data in SQL Database
 
+# ERD
+
+![alt text](erd.png)
+
+# Modules
+
+## Home
+
+![alt text](home.png)
+
+## Select User
+
+![alt text](selectuser.png)
+
+## Create New Request
+
+![alt text](newrequest.png)
+
+## View Request
+
+![alt text](view.png)
+
+## Cancel Request
+
+![alt text](cancelrequest.png)
+
+## Request Approval
+
+![alt text](requestapproval.png)
+
 # Future Update
 
 - Convert to SPFx
