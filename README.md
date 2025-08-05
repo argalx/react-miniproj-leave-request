@@ -9,7 +9,7 @@
 
 # ERD
 
-![alt text](erd.png)
+![alt text](./public/erd.png)
 
 # Modules
 
